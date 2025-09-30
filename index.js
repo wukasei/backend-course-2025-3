@@ -7,21 +7,47 @@ program
 .requiredOption ('-i, --input <path>', 'шлях до вхідного файлу')
 .option('-o, --output <path>','шлях до файлу для запису результату')
 .option('-d, --display ','вивід результату у консоль')
+.option('-m, --mfo', 'показувати код МФО перед назвою')
+.option('-n, --normal', 'показувати лише банки зі статусом 1 "Нормальний"');
 
 program.parse(process.argv);
 
-const option = program.opts();
+const options = program.opts();
 
-if(!option.input){
+if(!options.input){
     console.error("Please, specify input file");
     process.exit(1);
 }
 
-if(!files.existsSync(option.input)){
+if(!files.existsSync(options.input)){
     console.error("Cannot find input file");
     process.exit(1);
 }
 
-console.log("Input file exists", option.input);
-console.log("Output file", option.output || "not specified");
-console.log("Do you wanna display?", option.display ? "yes" : "no");
+const readFiles = fs.readFileSync(options.input);
+let banks
+try{
+    banks = JSON.parse(readFiles);
+}
+catch (error){
+    console.error("Invalid JSON file");
+    process.exit(1);
+}
+
+if (options.normal) {
+    banks = banks.filter(bank => bank.COD_STATE === 1);
+}
+
+const outputLines = banks.map(bank => {
+    const mfo = options.mfo ? `${bank.MFO} ` : '';
+    return `${mfo}${bank.NAME}`;
+});
+
+if (options.display) {
+    console.log(outputLines.join("\n"));
+}
+
+if (options.output) {
+    fs.writeFileSync(options.output, outputLines.join("\n"));
+}
+

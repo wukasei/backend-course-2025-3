@@ -6,7 +6,7 @@ const program =  new Command;
 program
 .requiredOption ('-i, --input <path>', 'шлях до вхідного файлу')
 .option('-o, --output <path>','шлях до файлу для запису результату')
-.option('-d, --display ','вивід результату у консоль')
+.option('-d, --display','вивід результату у консоль')
 .option('-m, --mfo', 'показувати код МФО перед назвою')
 .option('-n, --normal', 'показувати лише банки зі статусом 1 "Нормальний"');
 
@@ -24,7 +24,7 @@ if(!files.existsSync(options.input)){
     process.exit(1);
 }
 
-const readFiles = fs.readFileSync(options.input);
+const readFiles = files.readFileSync(options.input);
 let banks
 try{
     banks = JSON.parse(readFiles);
@@ -34,20 +34,31 @@ catch (error){
     process.exit(1);
 }
 
-if (options.normal) {
-    banks = banks.filter(bank => bank.COD_STATE === 1);
+if (!Array.isArray(banks)) {
+    banks = Object.values(banks);
 }
 
+if (options.normal) {
+    banks = banks.filter(bank => Number(bank.COD_STATE) === 1);
+}
+
+//console.log(banks[0]);
+//process.exit(); 
+
+
 const outputLines = banks.map(bank => {
-    const mfo = options.mfo ? `${bank.MFO} ` : '';
-    return `${mfo}${bank.NAME}`;
+    const mfo = bank.MFO ? `${bank.MFO} ` : ''; 
+    const name = bank.SHORTNAME || bank.FULLNAME || 'Unknown';
+    return `${mfo}${name}`;
 });
+
+
 
 if (options.display) {
     console.log(outputLines.join("\n"));
 }
 
 if (options.output) {
-    fs.writeFileSync(options.output, outputLines.join("\n"));
+    files.writeFileSync(options.output, outputLines.join("\n"));
 }
 

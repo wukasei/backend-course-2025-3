@@ -1,7 +1,7 @@
-const command = require ("commander");
+const { Command } = require("commander");
 const files = require("fs");
 
-const program =  new command;
+const program =  new Command;
 
 program
 .requiredOption ('-i, --input <path>', 'шлях до вхідного файлу')

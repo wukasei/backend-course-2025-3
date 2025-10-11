@@ -47,7 +47,7 @@ if (options.normal) {
 
 
 const outputLines = banks.map(bank => {
-    const mfo = bank.MFO ? `${bank.MFO} ` : ''; 
+    const mfo = options.m ? (bank.MFO ? `${bank.MFO} ` : '') : '';
     const name = bank.SHORTNAME || bank.FULLNAME || 'Unknown';
     return `${mfo}${name}`;
 });

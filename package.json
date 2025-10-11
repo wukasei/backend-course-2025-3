@@ -17,8 +17,5 @@
     "url": "https://github.com/wukasei/backend-course-2025-3/issues"
   },
   "homepage": "https://github.com/wukasei/backend-course-2025-3#readme"
-},
-"dependencies": {
-  "commander": "^12.1.0"
 }
 
